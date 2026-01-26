@@ -31,10 +31,11 @@
       padding:28px 14px 40px;
     }
 
+    /* Single column app layout (Journal is stacked top→bottom) */
     .wrap{
-      width: min(1100px, 100%);
+      width: min(1200px, 100%);
       display:grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1fr;
       gap:16px;
       align-items:start;
     }
@@ -64,17 +65,16 @@
       color:var(--muted);
       line-height:1.2;
       text-align:right;
-      max-width:360px;
+      max-width:420px;
     }
 
     /* Tabs */
     .tabs{
-      grid-column: 1 / -1;
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
-      margin-bottom:4px;
+      padding:12px 14px;
     }
     .tabBtn{
       border:1px solid rgba(255,255,255,0.14);
@@ -94,13 +94,20 @@
     }
 
     .view{ display:none; }
-    .view.active{ display:contents; } /* keep grid layout */
+    .view.active{ display:block; }
 
+    /* Entry grids */
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:12px;
       margin-bottom:14px;
+    }
+    @media (min-width: 1050px){
+      /* entry card is wide now — give a bit more room without becoming cramped */
+      .grid.tight3{
+        grid-template-columns: 1.15fr 0.85fr 1fr;
+      }
     }
 
     .field{
@@ -262,7 +269,6 @@
       background: rgba(255,255,255,0.03);
     }
 
-    /* Edit mode buttons */
     button.warnBtn{
       background: rgba(251, 191, 36, 0.18);
       border: 1px solid rgba(251, 191, 36, 0.35);
@@ -294,85 +300,8 @@
     }
     .warn strong{ color: #fbbf24; }
 
-    /* Right panel */
-    .side h2{
-      margin:0 0 10px 0;
-      font-size:14px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing:0.2px;
-      font-weight:950;
-    }
-    .dayHeader{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .dayHeader .date{
-      font-size:14px;
-      font-weight:950;
-    }
-    .tradeList{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-bottom:12px;
-    }
-    .tradeBtn{
-      text-align:left;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background: rgba(17,24,39,0.55);
-      color: var(--text);
-      cursor:pointer;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      font-size:13px;
-    }
-    .tradeBtn:hover{ background: rgba(255,255,255,0.03); }
-    .tradeBtn.active{
-      border-color: rgba(96,165,250,0.55);
-      box-shadow: 0 0 0 4px rgba(96,165,250,0.10);
-    }
-    .tradeBtn .meta{
-      color: var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-    }
-
-    .detailBox{
-      border:1px solid var(--line2);
-      background: rgba(15,23,42,0.45);
-      border-radius:14px;
-      padding:12px;
-    }
-    .detailBox .k{
-      color: var(--muted);
-      font-size:12px;
-      margin-top:8px;
-    }
-    .detailBox .v{
-      font-size:13px;
-      line-height:1.4;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-
-    .inlineActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-
     /* Calendar */
     .calendarCard{
-      grid-column: 1 / -1;
       padding:16px;
     }
     .calTop{
@@ -476,9 +405,88 @@
       border-color: var(--negBorder);
     }
 
+    /* Day Details (now between calendar and entry) */
+    .dayDetailsCard{ display:none; }
+    .dayHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .dayHeader .date{
+      font-size:14px;
+      font-weight:950;
+    }
+    .dayDetailsGrid{
+      display:grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap:12px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+      .dayDetailsGrid{ grid-template-columns: 1fr; }
+    }
+
+    .tradeList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:0;
+    }
+    .tradeBtn{
+      text-align:left;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(17,24,39,0.55);
+      color: var(--text);
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      font-size:13px;
+    }
+    .tradeBtn:hover{ background: rgba(255,255,255,0.03); }
+    .tradeBtn.active{
+      border-color: rgba(96,165,250,0.55);
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.10);
+    }
+    .tradeBtn .meta{
+      color: var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .detailBox{
+      border:1px solid var(--line2);
+      background: rgba(15,23,42,0.45);
+      border-radius:14px;
+      padding:12px;
+    }
+    .detailBox .k{
+      color: var(--muted);
+      font-size:12px;
+      margin-top:8px;
+    }
+    .detailBox .v{
+      font-size:13px;
+      line-height:1.4;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .inlineActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
     /* Insights */
     .insightsWrap{
-      grid-column: 1 / -1;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:16px;
@@ -553,21 +561,17 @@
       font-size:12px;
       white-space:nowrap;
     }
-
     @media (max-width: 900px){
-      .wrap{ grid-template-columns: 1fr; }
-      .grid{ grid-template-columns: 1fr; }
       .insightsWrap{ grid-template-columns: 1fr; }
       .statGrid{ grid-template-columns: 1fr; }
-      .trow{ grid-template-columns: 1fr 120px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
 
-    <!-- Tabs (new) -->
-    <div class="tabs card" style="padding:12px 14px;">
+    <!-- Tabs -->
+    <div class="card tabs">
       <button class="tabBtn active" id="tabJournalBtn" type="button">Journal</button>
       <button class="tabBtn" id="tabInsightsBtn" type="button">Insights</button>
       <div class="pill" style="margin-left:auto;">
@@ -576,143 +580,12 @@
     </div>
 
     <!-- =========================
-         JOURNAL VIEW (existing UI)
+         JOURNAL VIEW (NEW ORDER)
+         Calendar (top) → Day Details (middle, only if trades) → Entry (bottom, wide)
          ========================= -->
     <div class="view active" id="journalView">
-      <!-- Main entry -->
-      <div class="card">
-        <div class="title">
-          <h1>Trade Journal — Entry</h1>
-          <div class="hint">
-            Click a day on the calendar to set the trade date.<br/>
-            Calendar shows <b>date • trades • $PnL</b>. Notes only appear when opening a submitted trade.
-          </div>
-        </div>
 
-        <div class="grid">
-          <div class="field">
-            <label>Selected day</label>
-            <div class="pill">
-              <span>Date:</span> <strong id="selectedDayText">—</strong>
-            </div>
-            <div class="warn" style="margin-top:10px;">
-              <strong>Required:</strong> choose a calendar day before submitting.
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="tickerSelect">Ticker</label>
-            <select id="tickerSelect">
-              <option value="" selected disabled>Select ticker…</option>
-              <option value="NQ">NQ</option>
-              <option value="MNQ">MNQ</option>
-              <option value="ES">ES</option>
-              <option value="MES">MES</option>
-              <option value="MGC">MGC</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid">
-          <div class="field">
-            <label>Time of day</label>
-            <div class="row3">
-              <select id="hourSelect" aria-label="Hour">
-                <option value="" selected disabled>Hour</option>
-              </select>
-              <select id="minuteSelect" aria-label="Minute">
-                <option value="" selected disabled>Min</option>
-              </select>
-              <select id="ampmSelect" aria-label="AM or PM">
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
-            </div>
-            <div class="warn" id="timePreview" style="margin-top:10px;">Selected time: —</div>
-          </div>
-
-          <div class="field">
-            <label>Trade details</label>
-            <div class="row3">
-              <select id="dirSelect" aria-label="Direction">
-                <option value="" selected disabled>Long/Short</option>
-                <option value="Long">Long</option>
-                <option value="Short">Short</option>
-              </select>
-              <input id="rrInput" type="number" step="0.1" placeholder="Target RR (e.g., 2.0)" />
-              <input id="pnlInput" type="number" step="0.01" placeholder="PnL (e.g., 125.50 or -80)" />
-            </div>
-            <div class="warn" style="margin-top:10px;">Day color uses net PnL (green/red) once at least 1 trade exists.</div>
-          </div>
-        </div>
-
-        <div class="field" style="margin-bottom:14px;">
-          <div class="search">
-            <label for="confluenceInput">Add confluences</label>
-            <input id="confluenceInput" type="text" autocomplete="off"
-                   placeholder="Start typing (e.g., Bullish 1hr FVG, Bearish 5min IFVG)..." />
-            <div id="dropdown" class="dropdown" role="listbox" aria-label="Confluence suggestions"></div>
-          </div>
-          <div class="chips" id="chips" aria-label="Selected confluences"></div>
-        </div>
-
-        <div class="field">
-          <label for="notesInput">Notes</label>
-          <textarea id="notesInput" placeholder="Only visible when you open the submitted trade."></textarea>
-        </div>
-
-        <div class="recap">
-          <h2>Trade recap (preview)</h2>
-          <div class="text" id="previewText" aria-live="polite"></div>
-        </div>
-
-        <!-- Entry actions (also used for edit mode) -->
-        <div class="actions" id="entryActions">
-          <button class="primary" id="submitBtn">Submit Trade</button>
-          <button class="ghost" id="clearBtn">Clear Entry</button>
-        </div>
-
-        <!-- Edit mode actions (hidden by default) -->
-        <div class="actions" id="editActions" style="display:none;">
-          <button class="warnBtn" id="saveEditBtn">Save Changes</button>
-          <button class="ghost" id="cancelEditBtn">Cancel Edit</button>
-        </div>
-
-        <div class="warn" id="modeHint">
-          <strong>Submit rules:</strong> must select a calendar day and at least 1 confluence.
-        </div>
-      </div>
-
-      <!-- Right panel -->
-      <div class="card side">
-        <div class="dayHeader">
-          <div>
-            <h2 style="margin:0 0 6px 0;">Day details</h2>
-            <div class="date" id="dayDetailsDate">Select a day</div>
-          </div>
-          <div class="pill">
-            Trades: <strong id="dayTradeCount">0</strong> &nbsp;|&nbsp; <strong id="dayTotalPnL">$0.00</strong>
-          </div>
-        </div>
-
-        <div class="tradeList" id="tradeList"></div>
-
-        <div class="detailBox" id="tradeDetailsBox">
-          <div class="k">Select a trade to view details.</div>
-        </div>
-
-        <!-- edit/delete buttons for selected trade -->
-        <div class="inlineActions" id="tradeDetailActions" style="display:none;">
-          <button class="warnBtn" id="editTradeBtn" type="button">Edit Trade</button>
-          <button class="danger" id="deleteTradeBtn" type="button">Delete Trade</button>
-        </div>
-
-        <div class="warn" style="margin-top:12px;">
-          Tip: click a day with trades, then pick a trade to view/edit/delete.
-        </div>
-      </div>
-
-      <!-- Calendar -->
+      <!-- Calendar FIRST -->
       <div class="card calendarCard">
         <div class="calTop">
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -736,13 +609,157 @@
           Calendar tiles: <strong>day</strong> + <strong>no trades / n trades</strong> on top, and <strong>$PnL</strong> on bottom if trades exist.
         </div>
       </div>
+
+      <!-- Day details MIDDLE (hidden if selected day has no trades) -->
+      <div class="card dayDetailsCard" id="dayDetailsCard">
+        <div class="dayHeader">
+          <div>
+            <div class="hint" style="text-align:left; max-width:none; margin-bottom:6px;">
+              Day details only appear when the selected day has trades.
+            </div>
+            <div class="date" id="dayDetailsDate">—</div>
+          </div>
+          <div class="pill">
+            Trades: <strong id="dayTradeCount">0</strong> &nbsp;|&nbsp; <strong id="dayTotalPnL">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="dayDetailsGrid">
+          <div>
+            <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+              Trades
+            </h2>
+            <div class="tradeList" id="tradeList"></div>
+          </div>
+
+          <div>
+            <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+              Selected trade
+            </h2>
+            <div class="detailBox" id="tradeDetailsBox">
+              <div class="k">Select a trade to view details.</div>
+            </div>
+
+            <div class="inlineActions" id="tradeDetailActions" style="display:none;">
+              <button class="warnBtn" id="editTradeBtn" type="button">Edit Trade</button>
+              <button class="danger" id="deleteTradeBtn" type="button">Delete Trade</button>
+            </div>
+
+            <div class="warn" style="margin-top:12px;">
+              Tip: pick a trade on the left to view/edit/delete.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry LAST (wide) -->
+      <div class="card" id="entryCard">
+        <div class="title">
+          <h1>Trade Journal — Entry</h1>
+          <div class="hint">
+            Click a day on the calendar to set the trade date.<br/>
+            Enter trade details below and submit to the selected day.
+          </div>
+        </div>
+
+        <div class="grid tight3">
+          <div class="field">
+            <label>Selected day</label>
+            <div class="pill">
+              <span>Date:</span> <strong id="selectedDayText">—</strong>
+            </div>
+            <div class="warn" style="margin-top:10px;">
+              <strong>Required:</strong> choose a calendar day before submitting.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="tickerSelect">Ticker</label>
+            <select id="tickerSelect">
+              <option value="" selected disabled>Select ticker…</option>
+              <option value="NQ">NQ</option>
+              <option value="MNQ">MNQ</option>
+              <option value="ES">ES</option>
+              <option value="MES">MES</option>
+              <option value="MGC">MGC</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Time of day</label>
+            <div class="row3">
+              <select id="hourSelect" aria-label="Hour">
+                <option value="" selected disabled>Hour</option>
+              </select>
+              <select id="minuteSelect" aria-label="Minute">
+                <option value="" selected disabled>Min</option>
+              </select>
+              <select id="ampmSelect" aria-label="AM or PM">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
+            <div class="warn" id="timePreview" style="margin-top:10px;">Selected time: —</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label>Trade details</label>
+            <div class="row3">
+              <select id="dirSelect" aria-label="Direction">
+                <option value="" selected disabled>Long/Short</option>
+                <option value="Long">Long</option>
+                <option value="Short">Short</option>
+              </select>
+              <input id="rrInput" type="number" step="0.1" placeholder="Target RR (e.g., 2.0)" />
+              <input id="pnlInput" type="number" step="0.01" placeholder="PnL (e.g., 125.50 or -80)" />
+            </div>
+            <div class="warn" style="margin-top:10px;">Day color uses net PnL (green/red) once at least 1 trade exists.</div>
+          </div>
+
+          <div class="field">
+            <label for="notesInput">Notes</label>
+            <textarea id="notesInput" placeholder="Only visible when you open the submitted trade."></textarea>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:14px;">
+          <div class="search">
+            <label for="confluenceInput">Add confluences</label>
+            <input id="confluenceInput" type="text" autocomplete="off"
+                   placeholder="Start typing (e.g., Bullish 1hr FVG, Bearish 5min IFVG)..." />
+            <div id="dropdown" class="dropdown" role="listbox" aria-label="Confluence suggestions"></div>
+          </div>
+          <div class="chips" id="chips" aria-label="Selected confluences"></div>
+        </div>
+
+        <div class="recap">
+          <h2>Trade recap (preview)</h2>
+          <div class="text" id="previewText" aria-live="polite"></div>
+        </div>
+
+        <div class="actions" id="entryActions">
+          <button class="primary" id="submitBtn">Submit Trade</button>
+          <button class="ghost" id="clearBtn">Clear Entry</button>
+        </div>
+
+        <div class="actions" id="editActions" style="display:none;">
+          <button class="warnBtn" id="saveEditBtn">Save Changes</button>
+          <button class="ghost" id="cancelEditBtn">Cancel Edit</button>
+        </div>
+
+        <div class="warn" id="modeHint">
+          <strong>Submit rules:</strong> must select a calendar day and at least 1 confluence.
+        </div>
+      </div>
     </div>
 
     <!-- =========================
-         INSIGHTS VIEW (new tab)
+         INSIGHTS VIEW (unchanged)
          ========================= -->
     <div class="view" id="insightsView">
-      <div class="card" style="grid-column: 1 / -1;">
+      <div class="card">
         <div class="title" style="margin-bottom:8px;">
           <h1>Insights</h1>
           <div class="hint">
@@ -755,14 +772,16 @@
           <button class="ghost" id="refreshInsightsBtn" type="button">Refresh Insights</button>
         </div>
 
-        <div class="warn" id="insightsNote" style="margin-top:10px;">
+        <div class="warn" style="margin-top:10px;">
           Tip: Insights update automatically when you add/edit/delete trades, but you can also refresh manually.
         </div>
       </div>
 
       <div class="insightsWrap">
         <div class="card">
-          <h2 style="margin:0 0 10px 0;">Key stats</h2>
+          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            Key stats
+          </h2>
           <div class="statGrid">
             <div class="stat">
               <div class="k">Win percentage</div>
@@ -837,13 +856,14 @@
         </div>
 
         <div class="card">
-          <h2 style="margin:0 0 10px 0;">Win rate per confluence</h2>
+          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            Win rate per confluence
+          </h2>
           <div class="table" id="confTable">
             <div class="trow">
               <div>Confluence</div>
               <div class="badgeMini">Win%</div>
             </div>
-            <!-- rows injected -->
           </div>
 
           <div class="warn" style="margin-top:12px;">
@@ -852,13 +872,14 @@
         </div>
 
         <div class="card" style="grid-column: 1 / -1;">
-          <h2 style="margin:0 0 10px 0;">Setup win rate (confluences together)</h2>
+          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            Setup win rate (confluences together)
+          </h2>
           <div class="table" id="setupTable">
             <div class="trow">
               <div>Setup (sorted confluences)</div>
               <div class="badgeMini">Win%</div>
             </div>
-            <!-- rows injected -->
           </div>
 
           <div class="warn" style="margin-top:12px;">
@@ -868,13 +889,14 @@
         </div>
 
         <div class="card" style="grid-column: 1 / -1;">
-          <h2 style="margin:0 0 10px 0;">Best time of day (by hour)</h2>
+          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            Best time of day (by hour)
+          </h2>
           <div class="table" id="timeTable">
             <div class="trow">
               <div>Hour bucket</div>
               <div class="badgeMini">Win%</div>
             </div>
-            <!-- rows injected -->
           </div>
 
           <div class="warn" style="margin-top:12px;">
@@ -918,31 +940,27 @@
       renderCalendar();
       renderDayDetails(selectedDateKey);
       renderPreview();
-      renderInsights(); // NEW
+      renderInsights();
     }
 
     /**********************
      * Confluences list
-     * UPDATED: All FVG & IFVG confluences now have Bullish/Bearish versions
      **********************/
     const CONFLUENCES = [
       "SMT",
-
       // FVG
       "Bullish 4hr FVG","Bearish 4hr FVG",
       "Bullish 1hr FVG","Bearish 1hr FVG",
       "Bullish 15min FVG","Bearish 15min FVG",
       "Bullish 5min FVG","Bearish 5min FVG",
       "Bullish 1min FVG","Bearish 1min FVG",
-
       // IFVG
       "Bullish 4hr IFVG","Bearish 4hr IFVG",
       "Bullish 1hr IFVG","Bearish 1hr IFVG",
       "Bullish 15min IFVG","Bearish 15min IFVG",
       "Bullish 5min IFVG","Bearish 5min IFVG",
       "Bullish 1min IFVG","Bearish 1min IFVG",
-
-      // other confluences (unchanged)
+      // other
       "Liquidity Sweep","Asia High Swept","Asia Low Swept","London High Swept",
       "London Low Swept","NY AM High Swept","NY AM Low Swept","NY PM High Swept","NY PM Low Swept",
       "1hr High Swept","1hr Low Swept","4hr High Swept","4hr Low Swept","15min High Swept","15min Low Swept",
@@ -956,14 +974,14 @@
      **********************/
     const APP = loadState(); // { tradesByDate: { "YYYY-MM-DD": [trade,...] } }
     let selectedConfluences = [];
-    let selectedDateKey = null;      // day selected on calendar
-    let selectedTradeId = null;      // currently viewed trade
-    let viewYear, viewMonth;         // calendar month shown
-    let editTradeId = null;          // currently editing trade id (null = not editing)
-    let editTradeOriginalDateKey = null; // dateKey where the trade originally lived
+    let selectedDateKey = null;
+    let selectedTradeId = null;
+    let viewYear, viewMonth;
+    let editTradeId = null;
+    let editTradeOriginalDateKey = null;
 
     /**********************
-     * Elements - Tabs (NEW)
+     * Tabs
      **********************/
     const tabJournalBtn = document.getElementById("tabJournalBtn");
     const tabInsightsBtn = document.getElementById("tabInsightsBtn");
@@ -977,17 +995,14 @@
       tabInsightsBtn.classList.toggle("active", !isJournal);
       journalView.classList.toggle("active", isJournal);
       insightsView.classList.toggle("active", !isJournal);
-
-      // On entering insights, render it
       if(!isJournal) renderInsights();
     }
-
     tabJournalBtn.addEventListener("click", () => setActiveTab("journal"));
     tabInsightsBtn.addEventListener("click", () => setActiveTab("insights"));
     refreshInsightsBtn.addEventListener("click", renderInsights);
 
     /**********************
-     * Elements - Journal
+     * Elements (Journal)
      **********************/
     const tickerSelect = document.getElementById("tickerSelect");
     const hourSelect = document.getElementById("hourSelect");
@@ -1016,6 +1031,7 @@
 
     const selectedDayText = document.getElementById("selectedDayText");
 
+    const dayDetailsCard = document.getElementById("dayDetailsCard");
     const dayDetailsDate = document.getElementById("dayDetailsDate");
     const dayTradeCount = document.getElementById("dayTradeCount");
     const dayTotalPnL = document.getElementById("dayTotalPnL");
@@ -1035,7 +1051,7 @@
     const clearDataBtn = document.getElementById("clearDataBtn");
 
     /**********************
-     * Elements - Insights (NEW)
+     * Elements (Insights)
      **********************/
     const statWinPct = document.getElementById("statWinPct");
     const statWinPctSub = document.getElementById("statWinPctSub");
@@ -1097,12 +1113,10 @@
       timePreview.textContent = `Selected time: ${t || "—"}`;
       renderPreview();
     }
-
     hourSelect.addEventListener("change", updateTimePreview);
     minuteSelect.addEventListener("change", updateTimePreview);
     ampmSelect.addEventListener("change", updateTimePreview);
 
-    // Notes do NOT update preview.
     [tickerSelect, dirSelect, rrInput, pnlInput].forEach(el => {
       el.addEventListener("input", renderPreview);
       el.addEventListener("change", renderPreview);
@@ -1203,9 +1217,7 @@
       `).join("");
     }
 
-    confluenceInput.addEventListener("input", () => {
-      showDropdown(getMatches(confluenceInput.value));
-    });
+    confluenceInput.addEventListener("input", () => showDropdown(getMatches(confluenceInput.value)));
 
     confluenceInput.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
@@ -1318,7 +1330,7 @@
     });
 
     /**********************
-     * CRUD: Create / Update / Delete
+     * CRUD
      **********************/
     function upsertTrade(dateKey, trade){
       if(!APP.tradesByDate[dateKey]) APP.tradesByDate[dateKey] = [];
@@ -1331,11 +1343,8 @@
     function removeTrade(dateKey, tradeId){
       const arr = APP.tradesByDate[dateKey] || [];
       const next = arr.filter(t => t.id !== tradeId);
-      if(next.length === 0){
-        delete APP.tradesByDate[dateKey];
-      }else{
-        APP.tradesByDate[dateKey] = next;
-      }
+      if(next.length === 0) delete APP.tradesByDate[dateKey];
+      else APP.tradesByDate[dateKey] = next;
     }
 
     function findTradeById(tradeId){
@@ -1379,9 +1388,9 @@
 
       selectedTradeId = trade.id;
       renderCalendar();
-      renderDayDetails(selectedDateKey);
+      renderDayDetails(selectedDateKey); // will show the middle card if day has trades
       clearEntry();
-      renderInsights(); // NEW
+      renderInsights();
     }
 
     submitBtn.addEventListener("click", submitTrade);
@@ -1398,7 +1407,7 @@
 
       entryActions.style.display = "none";
       editActions.style.display = "flex";
-      modeHint.innerHTML = `<strong>Editing:</strong> make changes on the left, then click <strong>Save Changes</strong>.`;
+      modeHint.innerHTML = `<strong>Editing:</strong> make changes below, then click <strong>Save Changes</strong>.`;
 
       const t = found.trade;
 
@@ -1477,7 +1486,7 @@
       clearEntry();
       renderCalendar();
       renderDayDetails(dayKeyToShow);
-      renderInsights(); // NEW
+      renderInsights();
     }
 
     function cancelEdit(){
@@ -1513,8 +1522,8 @@
 
       selectedTradeId = null;
       renderCalendar();
-      renderDayDetails(selectedDateKey);
-      renderInsights(); // NEW
+      renderDayDetails(selectedDateKey); // may hide middle card if no trades left
+      renderInsights();
     }
 
     editTradeBtn.addEventListener("click", () => {
@@ -1525,7 +1534,7 @@
     deleteTradeBtn.addEventListener("click", deleteSelectedTrade);
 
     /**********************
-     * Aggregation (journal)
+     * Aggregation
      **********************/
     function getDayTrades(dateKey){
       return APP.tradesByDate[dateKey] ? [...APP.tradesByDate[dateKey]] : [];
@@ -1541,35 +1550,36 @@
     function monthTotals(y, m0){
       const prefix = `${y}-${pad2(m0 + 1)}-`;
       let pnl = 0;
-
       for(const [dateKey, trades] of Object.entries(APP.tradesByDate)){
         if(!dateKey.startsWith(prefix)) continue;
-        for(const t of trades){
-          pnl += (Number(t.pnl) || 0);
-        }
+        for(const t of trades) pnl += (Number(t.pnl) || 0);
       }
       return { pnl };
     }
 
     /**********************
-     * Day Details (right panel)
+     * Day Details (MIDDLE CARD)
+     * Requirement: if selected day has no trades, hide this whole block.
      **********************/
     function renderDayDetails(dateKey){
-      dayDetailsDate.textContent = dateKey ? keyToPretty(dateKey) : "Select a day";
-
-      const {count, pnl} = dateKey ? dayTotals(dateKey) : {count:0, pnl:0};
-      dayTradeCount.textContent = String(count);
-      dayTotalPnL.textContent = formatMoney(pnl);
-
       const trades = dateKey ? getDayTrades(dateKey).sort((a,b)=> (b.createdAt||0) - (a.createdAt||0)) : [];
-      tradeList.innerHTML = "";
 
       if(!dateKey || trades.length === 0){
-        tradeList.innerHTML = `<div class="hint">No trades on this day yet.</div>`;
+        dayDetailsCard.style.display = "none";
+        tradeList.innerHTML = "";
         tradeDetailsBox.innerHTML = `<div class="k">Select a trade to view details.</div>`;
         tradeDetailActions.style.display = "none";
         return;
       }
+
+      dayDetailsCard.style.display = "block";
+      dayDetailsDate.textContent = keyToPretty(dateKey);
+
+      const {count, pnl} = dayTotals(dateKey);
+      dayTradeCount.textContent = String(count);
+      dayTotalPnL.textContent = formatMoney(pnl);
+
+      tradeList.innerHTML = "";
 
       for(const t of trades){
         const btn = document.createElement("button");
@@ -1607,7 +1617,6 @@
         <div class="k">Confluences</div><div class="v">${escapeHtml(conf)}</div>
         <div class="k">Notes</div><div class="v">${escapeHtml(notes)}</div>
       `;
-
       tradeDetailActions.style.display = "flex";
     }
 
@@ -1626,12 +1635,11 @@
       renderDayDetails(selectedDateKey);
       renderPreview();
       renderChips();
-      renderInsights(); // NEW (safe even if tab not open)
+      renderInsights();
     }
 
     function renderCalendar(){
       monthLabel.textContent = monthName(viewYear, viewMonth);
-
       const mt = monthTotals(viewYear, viewMonth);
       monthTotalPnL.textContent = formatMoney(mt.pnl);
 
@@ -1686,7 +1694,7 @@
           selectedDayText.textContent = keyToPretty(selectedDateKey);
           if(!editTradeId) selectedTradeId = null;
           renderCalendar();
-          renderDayDetails(selectedDateKey);
+          renderDayDetails(selectedDateKey); // will hide/show middle card
           renderPreview();
         });
 
@@ -1698,12 +1706,14 @@
       viewMonth -= 1;
       if(viewMonth < 0){ viewMonth = 11; viewYear -= 1; }
       renderCalendar();
+      renderDayDetails(selectedDateKey);
     });
 
     nextMonthBtn.addEventListener("click", () => {
       viewMonth += 1;
       if(viewMonth > 11){ viewMonth = 0; viewYear += 1; }
       renderCalendar();
+      renderDayDetails(selectedDateKey);
     });
 
     todayBtn.addEventListener("click", () => {
@@ -1721,7 +1731,7 @@
     clearDataBtn.addEventListener("click", clearAllData);
 
     /**********************
-     * Insights helpers (NEW)
+     * Insights (same as before)
      **********************/
     function getAllTrades(){
       const out = [];
@@ -1732,21 +1742,11 @@
       }
       return out;
     }
-
     function isWin(t){ return (Number(t.pnl) || 0) > 0; }
     function isLoss(t){ return (Number(t.pnl) || 0) < 0; }
     function isBE(t){ return (Number(t.pnl) || 0) === 0; }
-
-    function pct(wins, total){
-      if(total <= 0) return null;
-      return (wins / total) * 100;
-    }
-
-    function fmtPct(x){
-      if(x === null || x === undefined) return "—";
-      return `${x.toFixed(1)}%`;
-    }
-
+    function pct(wins, total){ if(total <= 0) return null; return (wins/total)*100; }
+    function fmtPct(x){ if(x === null || x === undefined) return "—"; return `${x.toFixed(1)}%`; }
     function safeText(el, text){ el.textContent = text; }
 
     function tradeLabel(t){
@@ -1763,28 +1763,24 @@
     }
 
     function parseTimeToHourBucket(timeStr){
-      // expects "h:mm AM" / "h:mm PM"
       if(!timeStr || typeof timeStr !== "string") return null;
       const parts = timeStr.trim().split(/\s+/);
       if(parts.length < 2) return null;
       const hm = parts[0];
       const ap = (parts[1] || "").toUpperCase();
       const [hStr, mStr] = hm.split(":");
-      const h = Number(hStr);
-      const m = Number(mStr);
+      const h = Number(hStr), m = Number(mStr);
       if(!Number.isFinite(h) || !Number.isFinite(m) || h < 1 || h > 12 || m < 0 || m > 59) return null;
       if(ap !== "AM" && ap !== "PM") return null;
 
       let hour24 = h % 12;
       if(ap === "PM") hour24 += 12;
-      // bucket label like "09:00–09:59"
       const start = `${pad2(hour24)}:00`;
       const end = `${pad2(hour24)}:59`;
       return { hour24, label: `${start}–${end}` };
     }
 
     function renderRows(tableEl, rows){
-      // tableEl already contains header row; we keep first .trow and replace the rest
       const all = Array.from(tableEl.querySelectorAll(".trow"));
       for(let i=1;i<all.length;i++) all[i].remove();
 
@@ -1807,38 +1803,22 @@
     function renderInsights(){
       const trades = getAllTrades();
 
-      // defaults
       if(trades.length === 0){
         safeText(statWinPct, "—");
         safeText(statWinPctSub, "Add trades to see stats.");
         safeText(statTotalTrades, "0");
         safeText(statTotalTradesSub, "Wins: 0 • Losses: 0 • BE: 0");
 
-        safeText(statBestDay, "—");
-        safeText(statBestDaySub, "—");
-        safeText(statWorstDay, "—");
-        safeText(statWorstDaySub, "—");
-
-        safeText(statBestTrade, "—");
-        safeText(statBestTradeSub, "—");
-        safeText(statWorstTrade, "—");
-        safeText(statWorstTradeSub, "—");
-
-        safeText(statBestConf, "—");
-        safeText(statBestConfSub, "—");
-        safeText(statWorstConf, "—");
-        safeText(statWorstConfSub, "—");
-
-        safeText(statBestSetup, "—");
-        safeText(statBestSetupSub, "—");
-
-        safeText(statBestTime, "—");
-        safeText(statBestTimeSub, "—");
-
-        safeText(statLongWin, "—");
-        safeText(statLongWinSub, "—");
-        safeText(statShortWin, "—");
-        safeText(statShortWinSub, "—");
+        safeText(statBestDay, "—"); safeText(statBestDaySub, "—");
+        safeText(statWorstDay, "—"); safeText(statWorstDaySub, "—");
+        safeText(statBestTrade, "—"); safeText(statBestTradeSub, "—");
+        safeText(statWorstTrade, "—"); safeText(statWorstTradeSub, "—");
+        safeText(statBestConf, "—"); safeText(statBestConfSub, "—");
+        safeText(statWorstConf, "—"); safeText(statWorstConfSub, "—");
+        safeText(statBestSetup, "—"); safeText(statBestSetupSub, "—");
+        safeText(statBestTime, "—"); safeText(statBestTimeSub, "—");
+        safeText(statLongWin, "—"); safeText(statLongWinSub, "—");
+        safeText(statShortWin, "—"); safeText(statShortWinSub, "—");
 
         renderRows(confTable, []);
         renderRows(setupTable, []);
@@ -1846,14 +1826,12 @@
         return;
       }
 
-      // win/loss/be
       const wins = trades.filter(isWin).length;
       const losses = trades.filter(isLoss).length;
       const bes = trades.filter(isBE).length;
       const total = trades.length;
 
-      const winPct = pct(wins, total);
-      safeText(statWinPct, fmtPct(winPct));
+      safeText(statWinPct, fmtPct(pct(wins, total)));
       safeText(statWinPctSub, `Wins: ${wins} • Losses: ${losses} • BE: ${bes}`);
       safeText(statTotalTrades, String(total));
 
@@ -1861,7 +1839,6 @@
       const avgPnl = netPnl / (total || 1);
       safeText(statTotalTradesSub, `Net: ${formatMoney(netPnl)} • Avg/trade: ${formatMoney(avgPnl)}`);
 
-      // Best/Worst trade
       const bestTrade = trades.reduce((best, t) => (best==null || (Number(t.pnl)||0) > (Number(best.pnl)||0)) ? t : best, null);
       const worstTrade = trades.reduce((worst, t) => (worst==null || (Number(t.pnl)||0) < (Number(worst.pnl)||0)) ? t : worst, null);
 
@@ -1876,8 +1853,7 @@
         safeText(statWorstTradeSub, `${lbl.when}\n${lbl.meta}`);
       }
 
-      // Best/Worst day by total PnL
-      const dayMap = new Map(); // dateKey -> { pnl, count }
+      const dayMap = new Map();
       for(const t of trades){
         const k = t.dateKey;
         if(!dayMap.has(k)) dayMap.set(k, { pnl:0, count:0 });
@@ -1904,10 +1880,8 @@
         safeText(statWorstDaySub, `${keyToPretty(worstDayKey)}\nTrades: ${v.count}`);
       }
 
-      // Win rate per direction
       const longTrades = trades.filter(t => (t.direction || "").toLowerCase() === "long");
       const shortTrades = trades.filter(t => (t.direction || "").toLowerCase() === "short");
-
       const longWins = longTrades.filter(isWin).length;
       const shortWins = shortTrades.filter(isWin).length;
 
@@ -1916,8 +1890,7 @@
       safeText(statShortWin, shortTrades.length ? fmtPct(pct(shortWins, shortTrades.length)) : "—");
       safeText(statShortWinSub, `Wins: ${shortWins}/${shortTrades.length || 0}`);
 
-      // Confluence win rates
-      const confMap = new Map(); // conf -> { used, wins }
+      const confMap = new Map();
       for(const t of trades){
         const confs = Array.isArray(t.confluences) ? t.confluences : [];
         for(const c of confs){
@@ -1930,55 +1903,28 @@
       }
 
       const confStats = Array.from(confMap.entries())
-        .map(([conf, v]) => ({
-          conf,
-          used: v.used,
-          wins: v.wins,
-          winPct: pct(v.wins, v.used) ?? 0
-        }))
-        .sort((a,b) => {
-          if(b.winPct !== a.winPct) return b.winPct - a.winPct;
-          return b.used - a.used;
-        });
+        .map(([conf, v]) => ({ conf, used: v.used, wins: v.wins, winPct: pct(v.wins, v.used) ?? 0 }))
+        .sort((a,b) => (b.winPct - a.winPct) || (b.used - a.used));
 
-      // render table (all confluences present)
       renderRows(confTable, confStats.map(x => ({
         left: `${x.conf}  (n=${x.used})`,
         right: fmtPct(x.winPct)
       })));
 
-      // best & worst confluence (require at least 1 sample; choose tie by larger n)
-      let bestConfObj = null;
-      let worstConfObj = null;
-      for(const x of confStats){
-        if(!bestConfObj || x.winPct > bestConfObj.winPct || (x.winPct === bestConfObj.winPct && x.used > bestConfObj.used)){
-          bestConfObj = x;
-        }
-        // for worst, scan from bottom later or compute directly
-      }
-      const confStatsAsc = [...confStats].sort((a,b) => {
-        if(a.winPct !== b.winPct) return a.winPct - b.winPct;
-        return b.used - a.used;
-      });
-      worstConfObj = confStatsAsc[0] || null;
+      const bestConfObj = confStats[0] || null;
+      const worstConfObj = [...confStats].sort((a,b) => (a.winPct - b.winPct) || (b.used - a.used))[0] || null;
 
       if(bestConfObj){
-        safeText(statBestConf, `${fmtPct(bestConfObj.winPct)}`);
+        safeText(statBestConf, fmtPct(bestConfObj.winPct));
         safeText(statBestConfSub, `${bestConfObj.conf}\nWins: ${bestConfObj.wins}/${bestConfObj.used}`);
-      }else{
-        safeText(statBestConf, "—");
-        safeText(statBestConfSub, "—");
-      }
-      if(worstConfObj){
-        safeText(statWorstConf, `${fmtPct(worstConfObj.winPct)}`);
-        safeText(statWorstConfSub, `${worstConfObj.conf}\nWins: ${worstConfObj.wins}/${worstConfObj.used}`);
-      }else{
-        safeText(statWorstConf, "—");
-        safeText(statWorstConfSub, "—");
-      }
+      }else{ safeText(statBestConf, "—"); safeText(statBestConfSub, "—"); }
 
-      // Setup (exact confluence combo) win rates
-      const setupMap = new Map(); // setupKey -> { used, wins }
+      if(worstConfObj){
+        safeText(statWorstConf, fmtPct(worstConfObj.winPct));
+        safeText(statWorstConfSub, `${worstConfObj.conf}\nWins: ${worstConfObj.wins}/${worstConfObj.used}`);
+      }else{ safeText(statWorstConf, "—"); safeText(statWorstConfSub, "—"); }
+
+      const setupMap = new Map();
       for(const t of trades){
         const k = normalizeSetupKey(t.confluences);
         if(!k) continue;
@@ -1989,18 +1935,9 @@
       }
 
       const setupStats = Array.from(setupMap.entries())
-        .map(([setup, v]) => ({
-          setup,
-          used: v.used,
-          wins: v.wins,
-          winPct: pct(v.wins, v.used) ?? 0
-        }))
-        .sort((a,b) => {
-          if(b.winPct !== a.winPct) return b.winPct - a.winPct;
-          return b.used - a.used;
-        });
+        .map(([setup, v]) => ({ setup, used: v.used, wins: v.wins, winPct: pct(v.wins, v.used) ?? 0 }))
+        .sort((a,b) => (b.winPct - a.winPct) || (b.used - a.used));
 
-      // best setup
       const bestSetupObj = setupStats[0] || null;
       if(bestSetupObj){
         safeText(statBestSetup, fmtPct(bestSetupObj.winPct));
@@ -2010,38 +1947,25 @@
         safeText(statBestSetupSub, "No setups yet (need confluences).");
       }
 
-      // render top setups (top 12)
       renderRows(setupTable, setupStats.slice(0,12).map(x => ({
         left: `${x.setup}  (n=${x.used})`,
         right: fmtPct(x.winPct)
       })));
 
-      // Time-of-day by hour bucket (win%)
-      const timeMap = new Map(); // hour24 -> { used, wins, label }
+      const timeMap = new Map();
       for(const t of trades){
         const parsed = parseTimeToHourBucket(t.time || "");
         if(!parsed) continue;
-        const key = parsed.hour24;
-        if(!timeMap.has(key)) timeMap.set(key, { used:0, wins:0, label: parsed.label });
-        const obj = timeMap.get(key);
+        if(!timeMap.has(parsed.hour24)) timeMap.set(parsed.hour24, { used:0, wins:0, label: parsed.label });
+        const obj = timeMap.get(parsed.hour24);
         obj.used += 1;
         if(isWin(t)) obj.wins += 1;
       }
 
       const timeStats = Array.from(timeMap.entries())
-        .map(([hour24, v]) => ({
-          hour24,
-          label: v.label,
-          used: v.used,
-          wins: v.wins,
-          winPct: pct(v.wins, v.used) ?? 0
-        }))
-        .sort((a,b) => {
-          if(b.winPct !== a.winPct) return b.winPct - a.winPct;
-          return b.used - a.used;
-        });
+        .map(([hour24, v]) => ({ hour24, label:v.label, used:v.used, wins:v.wins, winPct: pct(v.wins, v.used) ?? 0 }))
+        .sort((a,b) => (b.winPct - a.winPct) || (b.used - a.used));
 
-      // best time bucket
       const bestTimeObj = timeStats[0] || null;
       if(bestTimeObj){
         safeText(statBestTime, fmtPct(bestTimeObj.winPct));
@@ -2051,7 +1975,6 @@
         safeText(statBestTimeSub, "Add times to trades to compute this.");
       }
 
-      // render all time buckets (sorted by win% desc)
       renderRows(timeTable, timeStats.map(x => ({
         left: `${x.label}  (n=${x.used})`,
         right: fmtPct(x.winPct)
