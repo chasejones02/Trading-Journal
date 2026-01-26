@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trade Journal — PnL Calendar</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:rgba(255,255,255,0.10);
+      --line2:rgba(255,255,255,0.08);
+      --accent:#60a5fa;
+
+      --pos: rgba(52, 211, 153, 0.18);
+      --neg: rgba(251, 113, 133, 0.18);
+      --posBorder: rgba(52, 211, 153, 0.35);
+      --negBorder: rgba(251, 113, 133, 0.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1000px 600px at 20% 0%, #0f1a33 0%, var(--bg) 55%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:28px 14px 40px;
+    }
+
+    .wrap{
+      width: min(1100px, 100%);
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.09);
+      border-radius:16px;
+      padding:18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .title{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .title h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:0.2px;
+    }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.2;
+      text-align:right;
+      max-width:360px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .field{
+      background: rgba(17,24,39,0.45);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    select, input[type="text"], input[type="number"], textarea{
+      width:100%;
+      background: rgba(17,24,39,0.7);
+      border:1px solid var(--line);
+      color:var(--text);
+      outline:none;
+      padding:10px 10px;
+      border-radius:12px;
+      font-size:14px;
+    }
+    textarea{ min-height:92px; resize:vertical; }
+    select:focus, input:focus, textarea:focus{
+      border-color: rgba(96,165,250,0.65);
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.12);
+    }
+
+    .row3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      font-size:12px;
+      color: var(--muted);
+    }
+    .pill strong{ color: var(--text); font-weight:900; }
+
+    /* Confluence typeahead */
+    .search{ position:relative; }
+    .dropdown{
+      position:absolute;
+      left:0; right:0;
+      top: calc(100% + 8px);
+      background: rgba(17,24,39,0.96);
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      display:none;
+      z-index:50;
+      backdrop-filter: blur(10px);
+    }
+    .option{
+      padding:10px 12px;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      border-top:1px solid rgba(255,255,255,0.06);
+      font-size:14px;
+    }
+    .option:first-child{border-top:none}
+    .option:hover{ background: rgba(96,165,250,0.10); }
+    .option .match{ color:var(--muted); font-size:12px; white-space:nowrap; }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+      min-height:34px;
+      padding-top:4px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(96,165,250,0.12);
+      border:1px solid rgba(96,165,250,0.25);
+      font-size:13px;
+    }
+    .chip button{
+      border:none;
+      background: transparent;
+      color: var(--text);
+      cursor:pointer;
+      font-size:14px;
+      line-height:1;
+      opacity:0.85;
+    }
+    .chip button:hover{opacity:1}
+
+    .recap{
+      background: rgba(15,23,42,0.55);
+      border:1px solid var(--line2);
+      border-radius:14px;
+      padding:14px;
+      margin-top:14px;
+    }
+    .recap h2{
+      margin:0 0 8px 0;
+      font-size:13px;
+      letter-spacing:0.2px;
+      color: var(--muted);
+      font-weight:900;
+      text-transform: uppercase;
+    }
+    .recap .text{
+      font-size:14px;
+      line-height:1.4;
+      color: var(--text);
+      min-height:20px;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    button.primary{
+      background: rgba(96,165,250,0.95);
+      color:#07101f;
+      border:none;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:14px;
+    }
+    button.primary:hover{filter:brightness(1.03)}
+    button.ghost{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:14px;
+    }
+    button.ghost:hover{
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Edit mode buttons */
+    button.warnBtn{
+      background: rgba(251, 191, 36, 0.18);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: #fde68a;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:14px;
+    }
+    button.warnBtn:hover{ background: rgba(251, 191, 36, 0.22); }
+
+    button.danger{
+      background: rgba(251, 113, 133, 0.16);
+      border: 1px solid rgba(251, 113, 133, 0.30);
+      color: #fecdd3;
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:14px;
+    }
+    button.danger:hover{ background: rgba(251, 113, 133, 0.22); }
+
+    .warn{
+      margin-top:10px;
+      color: var(--muted);
+      font-size:12px;
+    }
+    .warn strong{ color: #fbbf24; }
+
+    /* Right panel */
+    .side h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing:0.2px;
+      font-weight:950;
+    }
+    .dayHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .dayHeader .date{
+      font-size:14px;
+      font-weight:950;
+    }
+    .tradeList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .tradeBtn{
+      text-align:left;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(17,24,39,0.55);
+      color: var(--text);
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      font-size:13px;
+    }
+    .tradeBtn:hover{ background: rgba(255,255,255,0.03); }
+    .tradeBtn.active{
+      border-color: rgba(96,165,250,0.55);
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.10);
+    }
+    .tradeBtn .meta{
+      color: var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .detailBox{
+      border:1px solid var(--line2);
+      background: rgba(15,23,42,0.45);
+      border-radius:14px;
+      padding:12px;
+    }
+    .detailBox .k{
+      color: var(--muted);
+      font-size:12px;
+      margin-top:8px;
+    }
+    .detailBox .v{
+      font-size:13px;
+      line-height:1.4;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .inlineActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    /* Calendar */
+    .calendarCard{
+      grid-column: 1 / -1;
+      padding:16px;
+    }
+    .calTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .calTop .month{
+      font-weight:950;
+      letter-spacing:0.2px;
+    }
+    .calTop .controls{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .calTop button{
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:13px;
+    }
+    .calTop button:hover{ background: rgba(255,255,255,0.04); }
+
+    .calGrid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:10px;
+    }
+    .dow{
+      font-size:12px;
+      color: var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      font-weight:950;
+      padding:0 4px;
+    }
+    .dayCell{
+      border:1px solid var(--line);
+      border-radius:14px;
+      min-height:84px;
+      padding:10px;
+      background: rgba(17,24,39,0.35);
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:8px;
+      transition: transform 0.06s ease;
+    }
+    .dayCell:hover{ background: rgba(255,255,255,0.03); }
+    .dayCell:active{ transform: scale(0.995); }
+    .dayCell.blank{
+      opacity:0.35;
+      cursor:default;
+    }
+    .dayCell.blank:hover{ background: rgba(17,24,39,0.35); }
+    .dayCell.selected{
+      border-color: rgba(96,165,250,0.6);
+      box-shadow: 0 0 0 4px rgba(96,165,250,0.10);
+    }
+    .dayTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      font-weight:950;
+      font-size:13px;
+    }
+    .dayBadge{
+      font-size:11px;
+      color: var(--muted);
+      border:1px solid rgba(255,255,255,0.10);
+      padding:3px 8px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.02);
+      white-space:nowrap;
+      font-weight:900;
+    }
+    .dayBottom{
+      display:flex;
+      justify-content:flex-start;
+      align-items:flex-end;
+      min-height:18px;
+      font-size:13px;
+      font-weight:950;
+    }
+    .pos{
+      background: linear-gradient(180deg, var(--pos), rgba(17,24,39,0.35));
+      border-color: var(--posBorder);
+    }
+    .neg{
+      background: linear-gradient(180deg, var(--neg), rgba(17,24,39,0.35));
+      border-color: var(--negBorder);
+    }
+
+    @media (max-width: 900px){
+      .wrap{ grid-template-columns: 1fr; }
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Main entry -->
+    <div class="card">
+      <div class="title">
+        <h1>Trade Journal — Entry</h1>
+        <div class="hint">
+          Click a day on the calendar to set the trade date.<br/>
+          Calendar shows <b>date • trades • $PnL</b>. Notes only appear when opening a submitted trade.
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Selected day</label>
+          <div class="pill">
+            <span>Date:</span> <strong id="selectedDayText">—</strong>
+          </div>
+          <div class="warn" style="margin-top:10px;">
+            <strong>Required:</strong> choose a calendar day before submitting.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tickerSelect">Ticker</label>
+          <select id="tickerSelect">
+            <option value="" selected disabled>Select ticker…</option>
+            <option value="NQ">NQ</option>
+            <option value="MNQ">MNQ</option>
+            <option value="ES">ES</option>
+            <option value="MES">MES</option>
+            <option value="MGC">MGC</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>Time of day</label>
+          <div class="row3">
+            <select id="hourSelect" aria-label="Hour">
+              <option value="" selected disabled>Hour</option>
+            </select>
+            <select id="minuteSelect" aria-label="Minute">
+              <option value="" selected disabled>Min</option>
+            </select>
+            <select id="ampmSelect" aria-label="AM or PM">
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+          <div class="warn" id="timePreview" style="margin-top:10px;">Selected time: —</div>
+        </div>
+
+        <div class="field">
+          <label>Trade details</label>
+          <div class="row3">
+            <select id="dirSelect" aria-label="Direction">
+              <option value="" selected disabled>Long/Short</option>
+              <option value="Long">Long</option>
+              <option value="Short">Short</option>
+            </select>
+            <input id="rrInput" type="number" step="0.1" placeholder="Target RR (e.g., 2.0)" />
+            <input id="pnlInput" type="number" step="0.01" placeholder="PnL (e.g., 125.50 or -80)" />
+          </div>
+          <div class="warn" style="margin-top:10px;">Day color uses net PnL (green/red) once at least 1 trade exists.</div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <div class="search">
+          <label for="confluenceInput">Add confluences</label>
+          <input id="confluenceInput" type="text" autocomplete="off"
+                 placeholder="Start typing (e.g., Bullish 1hr FVG, Bearish 5min IFVG)..." />
+          <div id="dropdown" class="dropdown" role="listbox" aria-label="Confluence suggestions"></div>
+        </div>
+        <div class="chips" id="chips" aria-label="Selected confluences"></div>
+      </div>
+
+      <div class="field">
+        <label for="notesInput">Notes</label>
+        <textarea id="notesInput" placeholder="Only visible when you open the submitted trade."></textarea>
+      </div>
+
+      <div class="recap">
+        <h2>Trade recap (preview)</h2>
+        <div class="text" id="previewText" aria-live="polite"></div>
+      </div>
+
+      <!-- Entry actions (also used for edit mode) -->
+      <div class="actions" id="entryActions">
+        <button class="primary" id="submitBtn">Submit Trade</button>
+        <button class="ghost" id="clearBtn">Clear Entry</button>
+      </div>
+
+      <!-- Edit mode actions (hidden by default) -->
+      <div class="actions" id="editActions" style="display:none;">
+        <button class="warnBtn" id="saveEditBtn">Save Changes</button>
+        <button class="ghost" id="cancelEditBtn">Cancel Edit</button>
+      </div>
+
+      <div class="warn" id="modeHint">
+        <strong>Submit rules:</strong> must select a calendar day and at least 1 confluence.
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="card side">
+      <div class="dayHeader">
+        <div>
+          <h2 style="margin:0 0 6px 0;">Day details</h2>
+          <div class="date" id="dayDetailsDate">Select a day</div>
+        </div>
+        <div class="pill">
+          Trades: <strong id="dayTradeCount">0</strong> &nbsp;|&nbsp; <strong id="dayTotalPnL">$0.00</strong>
+        </div>
+      </div>
+
+      <div class="tradeList" id="tradeList"></div>
+
+      <div class="detailBox" id="tradeDetailsBox">
+        <div class="k">Select a trade to view details.</div>
+      </div>
+
+      <!-- edit/delete buttons for selected trade -->
+      <div class="inlineActions" id="tradeDetailActions" style="display:none;">
+        <button class="warnBtn" id="editTradeBtn" type="button">Edit Trade</button>
+        <button class="danger" id="deleteTradeBtn" type="button">Delete Trade</button>
+      </div>
+
+      <div class="warn" style="margin-top:12px;">
+        Tip: click a day with trades, then pick a trade to view/edit/delete.
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="card calendarCard">
+      <div class="calTop">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div class="month" id="monthLabel">—</div>
+          <div class="pill" title="Sum of PnL for all trades in the currently shown month">
+            Month PnL: <strong id="monthTotalPnL">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="prevMonthBtn" type="button">◀ Prev</button>
+          <button id="todayBtn" type="button">Today</button>
+          <button id="nextMonthBtn" type="button">Next ▶</button>
+          <button id="clearDataBtn" type="button" title="Clears saved trades (local only)">Clear All Data</button>
+        </div>
+      </div>
+
+      <div class="calGrid" id="calGrid"></div>
+
+      <div class="warn" style="margin-top:12px;">
+        Calendar tiles: <strong>day</strong> + <strong>no trades / n trades</strong> on top, and <strong>$PnL</strong> on bottom if trades exist.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**********************
+     * Storage
+     **********************/
+    const STORAGE_KEY = "tradeJournal_v1";
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return { tradesByDate: {} };
+        const parsed = JSON.parse(raw);
+        if(!parsed || typeof parsed !== "object") return { tradesByDate: {} };
+        if(!parsed.tradesByDate || typeof parsed.tradesByDate !== "object") return { tradesByDate: {} };
+        return parsed;
+      }catch{
+        return { tradesByDate: {} };
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(APP));
+    }
+
+    function clearAllData(){
+      if(!confirm("Clear all saved trades on this device? This cannot be undone.")) return;
+      APP.tradesByDate = {};
+      saveState();
+      selectedTradeId = null;
+      exitEditMode();
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+      renderPreview();
+    }
+
+    /**********************
+     * Confluences list
+     * UPDATED: All FVG & IFVG confluences now have Bullish/Bearish versions
+     **********************/
+    const CONFLUENCES = [
+      "SMT",
+
+      // FVG
+      "Bullish 4hr FVG","Bearish 4hr FVG",
+      "Bullish 1hr FVG","Bearish 1hr FVG",
+      "Bullish 15min FVG","Bearish 15min FVG",
+      "Bullish 5min FVG","Bearish 5min FVG",
+      "Bullish 1min FVG","Bearish 1min FVG",
+
+      // IFVG
+      "Bullish 4hr IFVG","Bearish 4hr IFVG",
+      "Bullish 1hr IFVG","Bearish 1hr IFVG",
+      "Bullish 15min IFVG","Bearish 15min IFVG",
+      "Bullish 5min IFVG","Bearish 5min IFVG",
+      "Bullish 1min IFVG","Bearish 1min IFVG",
+
+      // other confluences (unchanged)
+      "Liquidity Sweep","Asia High Swept","Asia Low Swept","London High Swept",
+      "London Low Swept","NY AM High Swept","NY AM Low Swept","NY PM High Swept","NY PM Low Swept",
+      "1hr High Swept","1hr Low Swept","4hr High Swept","4hr Low Swept","15min High Swept","15min Low Swept",
+      "5min High Swept","5min Low Swept","1min High Swept","1min Low Swept","Equal Highs Swept","Equal Lows Swept",
+      "4hr BOS","1hr BOS","15min BOS","5min BOS","1min BOS","4hr Order Block","1hr Order Block",
+      "15min Order Block","5min Order Block","1min Order Block"
+    ];
+
+    /**********************
+     * App State
+     **********************/
+    const APP = loadState(); // { tradesByDate: { "YYYY-MM-DD": [trade,...] } }
+    let selectedConfluences = [];
+    let selectedDateKey = null;      // day selected on calendar
+    let selectedTradeId = null;      // currently viewed trade
+    let viewYear, viewMonth;         // calendar month shown
+    let editTradeId = null;          // currently editing trade id (null = not editing)
+    let editTradeOriginalDateKey = null; // dateKey where the trade originally lived
+
+    /**********************
+     * Elements
+     **********************/
+    const tickerSelect = document.getElementById("tickerSelect");
+    const hourSelect = document.getElementById("hourSelect");
+    const minuteSelect = document.getElementById("minuteSelect");
+    const ampmSelect = document.getElementById("ampmSelect");
+    const timePreview = document.getElementById("timePreview");
+
+    const dirSelect = document.getElementById("dirSelect");
+    const rrInput = document.getElementById("rrInput");
+    const pnlInput = document.getElementById("pnlInput");
+    const notesInput = document.getElementById("notesInput");
+
+    const confluenceInput = document.getElementById("confluenceInput");
+    const dropdown = document.getElementById("dropdown");
+    const chipsEl = document.getElementById("chips");
+
+    const previewText = document.getElementById("previewText");
+    const submitBtn = document.getElementById("submitBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const entryActions = document.getElementById("entryActions");
+    const editActions = document.getElementById("editActions");
+    const saveEditBtn = document.getElementById("saveEditBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const modeHint = document.getElementById("modeHint");
+
+    const selectedDayText = document.getElementById("selectedDayText");
+
+    const dayDetailsDate = document.getElementById("dayDetailsDate");
+    const dayTradeCount = document.getElementById("dayTradeCount");
+    const dayTotalPnL = document.getElementById("dayTotalPnL");
+    const tradeList = document.getElementById("tradeList");
+    const tradeDetailsBox = document.getElementById("tradeDetailsBox");
+
+    const tradeDetailActions = document.getElementById("tradeDetailActions");
+    const editTradeBtn = document.getElementById("editTradeBtn");
+    const deleteTradeBtn = document.getElementById("deleteTradeBtn");
+
+    const monthLabel = document.getElementById("monthLabel");
+    const monthTotalPnL = document.getElementById("monthTotalPnL");
+    const calGrid = document.getElementById("calGrid");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const todayBtn = document.getElementById("todayBtn");
+    const clearDataBtn = document.getElementById("clearDataBtn");
+
+    /**********************
+     * Init time selectors
+     **********************/
+    (function initTimeSelectors(){
+      for(let h=1; h<=12; h++){
+        const opt = document.createElement("option");
+        opt.value = String(h);
+        opt.textContent = String(h);
+        hourSelect.appendChild(opt);
+      }
+      for(let m=0; m<=59; m++){
+        const mm = String(m).padStart(2,"0");
+        const opt = document.createElement("option");
+        opt.value = mm;
+        opt.textContent = mm;
+        minuteSelect.appendChild(opt);
+      }
+      updateTimePreview();
+    })();
+
+    function updateTimePreview(){
+      const t = getTimeText();
+      timePreview.textContent = `Selected time: ${t || "—"}`;
+      renderPreview();
+    }
+
+    hourSelect.addEventListener("change", updateTimePreview);
+    minuteSelect.addEventListener("change", updateTimePreview);
+    ampmSelect.addEventListener("change", updateTimePreview);
+
+    // Notes do NOT update preview.
+    [tickerSelect, dirSelect, rrInput, pnlInput].forEach(el => {
+      el.addEventListener("input", renderPreview);
+      el.addEventListener("change", renderPreview);
+    });
+
+    /**********************
+     * Date Helpers
+     **********************/
+    function pad2(n){ return String(n).padStart(2,"0"); }
+
+    function toDateKey(d){
+      const y = d.getFullYear();
+      const m = pad2(d.getMonth()+1);
+      const day = pad2(d.getDate());
+      return `${y}-${m}-${day}`;
+    }
+
+    function keyToPretty(key){
+      if(!key) return "—";
+      const [y,m,d] = key.split("-").map(Number);
+      const dt = new Date(y, m-1, d);
+      return dt.toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"2-digit" });
+    }
+
+    function monthName(y, m0){
+      const dt = new Date(y, m0, 1);
+      return dt.toLocaleDateString(undefined, { month:"long", year:"numeric" });
+    }
+
+    /**********************
+     * Confluence typeahead
+     **********************/
+    function normalize(s){ return s.toLowerCase().trim(); }
+
+    function getMatches(query){
+      const q = normalize(query);
+      if(!q) return [];
+      const notSelected = CONFLUENCES.filter(c => !selectedConfluences.includes(c));
+      const scored = notSelected
+        .map(label => {
+          const n = normalize(label);
+          let score = -1;
+          if(n.startsWith(q)) score = 2;
+          else if(n.includes(q)) score = 1;
+          return score >= 0 ? { label, score } : null;
+        })
+        .filter(Boolean)
+        .sort((a,b) => {
+          if(b.score !== a.score) return b.score - a.score;
+          if(a.label.length !== b.label.length) return a.label.length - b.label.length;
+          return a.label.localeCompare(b.label);
+        })
+        .slice(0, 4);
+      return scored;
+    }
+
+    function showDropdown(items){
+      if(items.length === 0){
+        dropdown.style.display = "none";
+        dropdown.innerHTML = "";
+        return;
+      }
+      dropdown.innerHTML = items.map(item => `
+        <div class="option" role="option">
+          <span>${escapeHtml(item.label)}</span>
+          <span class="match">${item.score === 2 ? "starts with" : "contains"}</span>
+        </div>
+      `).join("");
+      dropdown.style.display = "block";
+    }
+
+    function hideDropdown(){
+      dropdown.style.display = "none";
+      dropdown.innerHTML = "";
+    }
+
+    function addConfluence(label){
+      if(!label) return;
+      if(selectedConfluences.includes(label)) return;
+      selectedConfluences.push(label);
+      confluenceInput.value = "";
+      hideDropdown();
+      renderChips();
+      renderPreview();
+      confluenceInput.focus();
+    }
+
+    function renderChips(){
+      if(selectedConfluences.length === 0){
+        chipsEl.innerHTML = `<span class="hint">No confluences selected yet.</span>`;
+        return;
+      }
+      chipsEl.innerHTML = selectedConfluences.map((c, idx) => `
+        <span class="chip">
+          ${escapeHtml(c)}
+          <button type="button" aria-label="Remove ${escapeHtml(c)}" data-remove="${idx}">×</button>
+        </span>
+      `).join("");
+    }
+
+    confluenceInput.addEventListener("input", () => {
+      showDropdown(getMatches(confluenceInput.value));
+    });
+
+    confluenceInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        const items = getMatches(confluenceInput.value);
+        if(items.length) addConfluence(items[0].label);
+      }
+      if(e.key === "Escape"){
+        hideDropdown();
+        confluenceInput.blur();
+      }
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      const opt = e.target.closest(".option");
+      if(!opt) return;
+      const label = opt.querySelector("span")?.textContent;
+      if(label) addConfluence(label);
+    });
+
+    chipsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-remove]");
+      if(!btn) return;
+      const idx = Number(btn.getAttribute("data-remove"));
+      if(Number.isFinite(idx)){
+        selectedConfluences.splice(idx, 1);
+        renderChips();
+        renderPreview();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const clickedInside = e.target.closest(".search");
+      if(!clickedInside) hideDropdown();
+    });
+
+    /**********************
+     * Entry Helpers
+     **********************/
+    function getTimeText(){
+      const h = hourSelect.value;
+      const m = minuteSelect.value;
+      const ap = ampmSelect.value;
+      return (h && m) ? `${h}:${m} ${ap}` : "";
+    }
+
+    function setTimeFromText(t){
+      if(!t){ hourSelect.value=""; minuteSelect.value=""; ampmSelect.value="AM"; updateTimePreview(); return; }
+      const parts = t.split(" ");
+      const hm = parts[0] || "";
+      const ap = parts[1] || "AM";
+      const [h,m] = hm.split(":");
+      hourSelect.value = h || "";
+      minuteSelect.value = m || "";
+      ampmSelect.value = (ap === "PM") ? "PM" : "AM";
+      updateTimePreview();
+    }
+
+    function parsePnL(){
+      const v = pnlInput.value;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function parseRR(){
+      const v = rrInput.value;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function formatMoney(n){
+      const sign = n < 0 ? "-" : "";
+      const abs = Math.abs(n);
+      return `${sign}$${abs.toFixed(2)}`;
+    }
+
+    function renderPreview(){
+      const parts = [];
+      parts.push(`Date: ${selectedDateKey ? keyToPretty(selectedDateKey) : "—"}`);
+      parts.push(`Ticker: ${tickerSelect.value || "—"}`);
+      parts.push(`Time: ${getTimeText() || "—"}`);
+      parts.push(`Direction: ${dirSelect.value || "—"}`);
+      const rr = parseRR();
+      parts.push(`Target RR: ${rr !== null ? rr : "—"}`);
+      const pnl = pnlInput.value ? formatMoney(parsePnL()) : "—";
+      parts.push(`PnL: ${pnl}`);
+      const conf = selectedConfluences.length ? selectedConfluences.join(" + ") : "—";
+      parts.push(`Confluences: ${conf}`);
+      previewText.textContent = parts.join(" | ");
+    }
+
+    function clearEntry(){
+      tickerSelect.value = "";
+      setTimeFromText("");
+      dirSelect.value = "";
+      rrInput.value = "";
+      pnlInput.value = "";
+      notesInput.value = "";
+
+      selectedConfluences = [];
+      confluenceInput.value = "";
+      hideDropdown();
+      renderChips();
+      renderPreview();
+    }
+
+    clearBtn.addEventListener("click", () => {
+      if(editTradeId) return;
+      clearEntry();
+    });
+
+    /**********************
+     * CRUD: Create / Update / Delete
+     **********************/
+    function upsertTrade(dateKey, trade){
+      if(!APP.tradesByDate[dateKey]) APP.tradesByDate[dateKey] = [];
+      const arr = APP.tradesByDate[dateKey];
+      const idx = arr.findIndex(t => t.id === trade.id);
+      if(idx >= 0) arr[idx] = trade;
+      else arr.push(trade);
+    }
+
+    function removeTrade(dateKey, tradeId){
+      const arr = APP.tradesByDate[dateKey] || [];
+      const next = arr.filter(t => t.id !== tradeId);
+      if(next.length === 0){
+        delete APP.tradesByDate[dateKey];
+      }else{
+        APP.tradesByDate[dateKey] = next;
+      }
+    }
+
+    function findTradeById(tradeId){
+      for(const [dateKey, trades] of Object.entries(APP.tradesByDate)){
+        const t = trades.find(x => x.id === tradeId);
+        if(t) return { dateKey, trade: t };
+      }
+      return null;
+    }
+
+    function submitTrade(){
+      if(editTradeId){
+        alert("You're in edit mode. Click 'Save Changes' or 'Cancel Edit'.");
+        return;
+      }
+      if(!selectedDateKey){
+        alert("Select a day on the calendar first.");
+        return;
+      }
+      if(selectedConfluences.length === 0){
+        alert("Add at least 1 confluence before submitting.");
+        return;
+      }
+
+      const trade = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2),
+        dateKey: selectedDateKey,
+        ticker: tickerSelect.value || "",
+        time: getTimeText(),
+        direction: dirSelect.value || "",
+        targetRR: parseRR(),
+        pnl: parsePnL(),
+        confluences: [...selectedConfluences],
+        notes: notesInput.value.trim(),
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+
+      upsertTrade(selectedDateKey, trade);
+      saveState();
+
+      selectedTradeId = trade.id;
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+      clearEntry();
+    }
+
+    submitBtn.addEventListener("click", submitTrade);
+
+    /**********************
+     * Edit Mode
+     **********************/
+    function enterEditMode(tradeId){
+      const found = findTradeById(tradeId);
+      if(!found) return;
+
+      editTradeId = tradeId;
+      editTradeOriginalDateKey = found.dateKey;
+
+      entryActions.style.display = "none";
+      editActions.style.display = "flex";
+      modeHint.innerHTML = `<strong>Editing:</strong> make changes on the left, then click <strong>Save Changes</strong>.`;
+
+      const t = found.trade;
+
+      selectedDateKey = t.dateKey;
+      selectedDayText.textContent = keyToPretty(selectedDateKey);
+      selectedTradeId = tradeId;
+
+      tickerSelect.value = t.ticker || "";
+      setTimeFromText(t.time || "");
+      dirSelect.value = t.direction || "";
+      rrInput.value = (t.targetRR === null || t.targetRR === undefined) ? "" : String(t.targetRR);
+      pnlInput.value = (t.pnl === null || t.pnl === undefined) ? "" : String(t.pnl);
+      notesInput.value = t.notes || "";
+
+      selectedConfluences = Array.isArray(t.confluences) ? [...t.confluences] : [];
+      renderChips();
+      renderPreview();
+
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+    }
+
+    function exitEditMode(){
+      editTradeId = null;
+      editTradeOriginalDateKey = null;
+      entryActions.style.display = "flex";
+      editActions.style.display = "none";
+      modeHint.innerHTML = `<strong>Submit rules:</strong> must select a calendar day and at least 1 confluence.`;
+    }
+
+    function saveEdit(){
+      if(!editTradeId) return;
+
+      if(!selectedDateKey){
+        alert("Select a day on the calendar first.");
+        return;
+      }
+      if(selectedConfluences.length === 0){
+        alert("Add at least 1 confluence before saving.");
+        return;
+      }
+
+      const existing = findTradeById(editTradeId);
+      if(!existing){
+        alert("Could not find that trade anymore.");
+        exitEditMode();
+        return;
+      }
+
+      const old = existing.trade;
+      const updated = {
+        ...old,
+        dateKey: selectedDateKey,
+        ticker: tickerSelect.value || "",
+        time: getTimeText(),
+        direction: dirSelect.value || "",
+        targetRR: parseRR(),
+        pnl: parsePnL(),
+        confluences: [...selectedConfluences],
+        notes: notesInput.value.trim(),
+        updatedAt: Date.now()
+      };
+
+      if(editTradeOriginalDateKey && editTradeOriginalDateKey !== selectedDateKey){
+        removeTrade(editTradeOriginalDateKey, editTradeId);
+        upsertTrade(selectedDateKey, updated);
+      }else{
+        upsertTrade(selectedDateKey, updated);
+      }
+
+      saveState();
+
+      selectedTradeId = editTradeId;
+      const dayKeyToShow = selectedDateKey;
+      exitEditMode();
+      clearEntry();
+      renderCalendar();
+      renderDayDetails(dayKeyToShow);
+    }
+
+    function cancelEdit(){
+      if(!editTradeId) return;
+      exitEditMode();
+      clearEntry();
+      renderPreview();
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+    }
+
+    saveEditBtn.addEventListener("click", saveEdit);
+    cancelEditBtn.addEventListener("click", cancelEdit);
+
+    /**********************
+     * Delete
+     **********************/
+    function deleteSelectedTrade(){
+      if(!selectedTradeId) return;
+      const found = findTradeById(selectedTradeId);
+      if(!found) return;
+
+      const ok = confirm("Delete this trade? This cannot be undone.");
+      if(!ok) return;
+
+      if(editTradeId === selectedTradeId){
+        exitEditMode();
+        clearEntry();
+      }
+
+      removeTrade(found.dateKey, selectedTradeId);
+      saveState();
+
+      selectedTradeId = null;
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+    }
+
+    editTradeBtn.addEventListener("click", () => {
+      if(!selectedTradeId) return;
+      enterEditMode(selectedTradeId);
+    });
+
+    deleteTradeBtn.addEventListener("click", deleteSelectedTrade);
+
+    /**********************
+     * Aggregation
+     **********************/
+    function getDayTrades(dateKey){
+      return APP.tradesByDate[dateKey] ? [...APP.tradesByDate[dateKey]] : [];
+    }
+
+    function dayTotals(dateKey){
+      const trades = getDayTrades(dateKey);
+      const count = trades.length;
+      const pnl = trades.reduce((s,t) => s + (Number(t.pnl) || 0), 0);
+      return { count, pnl };
+    }
+
+    function monthTotals(y, m0){
+      const prefix = `${y}-${pad2(m0 + 1)}-`;
+      let pnl = 0;
+
+      for(const [dateKey, trades] of Object.entries(APP.tradesByDate)){
+        if(!dateKey.startsWith(prefix)) continue;
+        for(const t of trades){
+          pnl += (Number(t.pnl) || 0);
+        }
+      }
+      return { pnl };
+    }
+
+    /**********************
+     * Day Details (right panel)
+     **********************/
+    function renderDayDetails(dateKey){
+      dayDetailsDate.textContent = dateKey ? keyToPretty(dateKey) : "Select a day";
+
+      const {count, pnl} = dateKey ? dayTotals(dateKey) : {count:0, pnl:0};
+      dayTradeCount.textContent = String(count);
+      dayTotalPnL.textContent = formatMoney(pnl);
+
+      const trades = dateKey ? getDayTrades(dateKey).sort((a,b)=> (b.createdAt||0) - (a.createdAt||0)) : [];
+      tradeList.innerHTML = "";
+
+      if(!dateKey || trades.length === 0){
+        tradeList.innerHTML = `<div class="hint">No trades on this day yet.</div>`;
+        tradeDetailsBox.innerHTML = `<div class="k">Select a trade to view details.</div>`;
+        tradeDetailActions.style.display = "none";
+        return;
+      }
+
+      for(const t of trades){
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tradeBtn" + (t.id === selectedTradeId ? " active" : "");
+        const pnlTxt = formatMoney(Number(t.pnl) || 0);
+        const metaLeft = `${t.ticker || "—"} • ${t.direction || "—"}`;
+        const metaRight = `${t.time || "—"} • ${pnlTxt}`;
+        btn.innerHTML = `<span>${escapeHtml(metaLeft)}</span><span class="meta">${escapeHtml(metaRight)}</span>`;
+        btn.addEventListener("click", () => {
+          selectedTradeId = t.id;
+          renderDayDetails(dateKey);
+          renderTradeDetails(t);
+        });
+        tradeList.appendChild(btn);
+      }
+
+      const picked = trades.find(x => x.id === selectedTradeId) || trades[0];
+      selectedTradeId = picked.id;
+      renderTradeDetails(picked);
+    }
+
+    function renderTradeDetails(t){
+      const rr = (t.targetRR === null || t.targetRR === undefined) ? "—" : String(t.targetRR);
+      const pnlTxt = formatMoney(Number(t.pnl) || 0);
+      const conf = (t.confluences && t.confluences.length) ? t.confluences.join(" + ") : "—";
+      const notes = t.notes ? t.notes : "—";
+
+      tradeDetailsBox.innerHTML = `
+        <div class="k">Ticker</div><div class="v">${escapeHtml(t.ticker || "—")}</div>
+        <div class="k">Time</div><div class="v">${escapeHtml(t.time || "—")}</div>
+        <div class="k">Direction</div><div class="v">${escapeHtml(t.direction || "—")}</div>
+        <div class="k">Target RR</div><div class="v">${escapeHtml(rr)}</div>
+        <div class="k">PnL</div><div class="v">${escapeHtml(pnlTxt)}</div>
+        <div class="k">Confluences</div><div class="v">${escapeHtml(conf)}</div>
+        <div class="k">Notes</div><div class="v">${escapeHtml(notes)}</div>
+      `;
+
+      tradeDetailActions.style.display = "flex";
+    }
+
+    /**********************
+     * Calendar
+     **********************/
+    const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    function initCalendarToToday(){
+      const now = new Date();
+      viewYear = now.getFullYear();
+      viewMonth = now.getMonth();
+      selectedDateKey = toDateKey(now);
+      selectedDayText.textContent = keyToPretty(selectedDateKey);
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+      renderPreview();
+      renderChips();
+    }
+
+    function renderCalendar(){
+      monthLabel.textContent = monthName(viewYear, viewMonth);
+
+      const mt = monthTotals(viewYear, viewMonth);
+      monthTotalPnL.textContent = formatMoney(mt.pnl);
+
+      calGrid.innerHTML = "";
+
+      for(const d of DOW){
+        const el = document.createElement("div");
+        el.className = "dow";
+        el.textContent = d;
+        calGrid.appendChild(el);
+      }
+
+      const first = new Date(viewYear, viewMonth, 1);
+      const startDow = first.getDay();
+      const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+      for(let i=0; i<startDow; i++){
+        const blank = document.createElement("div");
+        blank.className = "dayCell blank";
+        blank.innerHTML = `<div class="dayTop"><span>—</span><span class="dayBadge"></span></div><div class="dayBottom"></div>`;
+        calGrid.appendChild(blank);
+      }
+
+      for(let day=1; day<=daysInMonth; day++){
+        const dt = new Date(viewYear, viewMonth, day);
+        const key = toDateKey(dt);
+        const {count, pnl} = dayTotals(key);
+
+        const cell = document.createElement("div");
+        cell.className = "dayCell";
+
+        if(count > 0){
+          if(pnl > 0) cell.classList.add("pos");
+          else if(pnl < 0) cell.classList.add("neg");
+        }
+
+        if(selectedDateKey === key) cell.classList.add("selected");
+
+        const badge = count ? `${count} trade${count===1?"":"s"}` : "no trades";
+        const moneyBottom = (count > 0) ? formatMoney(pnl) : "";
+
+        cell.innerHTML = `
+          <div class="dayTop">
+            <span>${day}</span>
+            <span class="dayBadge">${escapeHtml(badge)}</span>
+          </div>
+          <div class="dayBottom">${escapeHtml(moneyBottom)}</div>
+        `;
+
+        cell.addEventListener("click", () => {
+          selectedDateKey = key;
+          selectedDayText.textContent = keyToPretty(selectedDateKey);
+          if(!editTradeId) selectedTradeId = null;
+          renderCalendar();
+          renderDayDetails(selectedDateKey);
+          renderPreview();
+        });
+
+        calGrid.appendChild(cell);
+      }
+    }
+
+    prevMonthBtn.addEventListener("click", () => {
+      viewMonth -= 1;
+      if(viewMonth < 0){ viewMonth = 11; viewYear -= 1; }
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      viewMonth += 1;
+      if(viewMonth > 11){ viewMonth = 0; viewYear += 1; }
+      renderCalendar();
+    });
+
+    todayBtn.addEventListener("click", () => {
+      const now = new Date();
+      viewYear = now.getFullYear();
+      viewMonth = now.getMonth();
+      selectedDateKey = toDateKey(now);
+      selectedDayText.textContent = keyToPretty(selectedDateKey);
+      if(!editTradeId) selectedTradeId = null;
+      renderCalendar();
+      renderDayDetails(selectedDateKey);
+      renderPreview();
+    });
+
+    clearDataBtn.addEventListener("click", clearAllData);
+
+    /**********************
+     * Escape helper
+     **********************/
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /**********************
+     * Boot
+     **********************/
+    initCalendarToToday();
+  </script>
+</body>
+</html>
