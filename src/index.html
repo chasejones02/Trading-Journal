@@ -11,11 +11,19 @@
 
     <!-- Tabs -->
     <div class="card tabs">
+      <div class="appName">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M1 12 L5 7 L9 9.5 L15 3" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="5" cy="7" r="1.5" fill="#60a5fa" opacity="0.7"/>
+          <circle cx="9" cy="9.5" r="1.5" fill="#60a5fa" opacity="0.7"/>
+          <circle cx="15" cy="3" r="1.5" fill="#34d399" opacity="0.8"/>
+        </svg>
+        Trade Journal
+      </div>
+      <div class="tabDivider"></div>
       <button class="tabBtn active" id="tabJournalBtn" type="button">Journal</button>
       <button class="tabBtn" id="tabInsightsBtn" type="button">Insights</button>
-      <div class="pill" style="margin-left:auto;">
-        Storage: <strong>Local (this browser)</strong>
-      </div>
+      <div class="storagePill">Local storage</div>
     </div>
 
     <!-- ============================
@@ -43,18 +51,12 @@
 
         <div class="calGrid" id="calGrid"></div>
 
-        <div class="warn" style="margin-top:12px;">
-          Calendar tiles: <strong>day</strong> + <strong>no trades / n trades</strong> on top, and <strong>$PnL</strong> on bottom if trades exist.
-        </div>
       </div>
 
       <!-- Day Details (hidden when selected day has no trades) -->
       <div class="card dayDetailsCard" id="dayDetailsCard">
         <div class="dayHeader">
           <div>
-            <div class="hint" style="text-align:left; max-width:none; margin-bottom:6px;">
-              Day details only appear when the selected day has trades.
-            </div>
             <div class="date" id="dayDetailsDate">—</div>
           </div>
           <div class="pill">
@@ -64,14 +66,14 @@
 
         <div class="dayDetailsGrid">
           <div>
-            <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            <h2 class="sectionLabel">
               Trades
             </h2>
             <div class="tradeList" id="tradeList"></div>
           </div>
 
           <div>
-            <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+            <h2 class="sectionLabel">
               Selected trade
             </h2>
             <div class="detailBox" id="tradeDetailsBox">
@@ -83,9 +85,6 @@
               <button class="danger"  id="deleteTradeBtn" type="button">Delete Trade</button>
             </div>
 
-            <div class="warn" style="margin-top:12px;">
-              Tip: pick a trade on the left to view/edit/delete.
-            </div>
           </div>
         </div>
       </div>
@@ -93,10 +92,9 @@
       <!-- Entry form -->
       <div class="card" id="entryCard">
         <div class="title">
-          <h1>Trade Journal — Entry</h1>
+          <h1>Log Trade</h1>
           <div class="hint">
-            Click a day on the calendar to set the trade date.<br/>
-            Enter trade details below and submit to the selected day.
+            Click a day on the calendar to set the date, then fill in the details below.
           </div>
         </div>
 
@@ -149,7 +147,6 @@
               <input id="rrInput"  type="number" step="0.1"    placeholder="Target RR (e.g., 2.0)" />
               <input id="pnlInput" type="number" step="0.01"   placeholder="PnL (e.g., 125.50 or -80)" />
             </div>
-            <div class="warn" style="margin-top:10px;">Day color uses net PnL (green/red) once at least 1 trade exists.</div>
           </div>
 
           <div class="field">
@@ -211,7 +208,7 @@
 
       <div class="insightsWrap">
         <div class="card">
-          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+          <h2 class="sectionLabel">
             Key stats
           </h2>
           <div class="statGrid">
@@ -234,7 +231,7 @@
         </div>
 
         <div class="card">
-          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+          <h2 class="sectionLabel">
             Win rate per confluence
           </h2>
           <div class="table" id="confTable">
@@ -246,7 +243,7 @@
         </div>
 
         <div class="card" style="grid-column: 1 / -1;">
-          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+          <h2 class="sectionLabel">
             Setup win rate (confluences together)
           </h2>
           <div class="table" id="setupTable">
@@ -259,7 +256,7 @@
         </div>
 
         <div class="card" style="grid-column: 1 / -1;">
-          <h2 style="margin:0 0 10px 0; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:0.2px; font-weight:950;">
+          <h2 class="sectionLabel">
             Best time of day (by hour)
           </h2>
           <div class="table" id="timeTable">
