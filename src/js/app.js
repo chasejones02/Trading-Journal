@@ -473,3 +473,14 @@ renderDayDetails(selectedDateKey);
 renderPreview();
 renderChips();
 renderInsights(APP);
+
+/**********************
+ * Scroll reveal
+ **********************/
+(function initReveal() {
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => e.target.classList.toggle('in-view', e.isIntersecting)),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+})();

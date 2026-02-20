@@ -103,6 +103,18 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Scroll reveal ────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ── Views ────────────────────────────────────────────── */
 .view {
   display: grid;
