@@ -62,11 +62,11 @@ body {
     0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
-/* ── App Header / Tabs ────────────────────────────────── */
+/* ── App Header ───────────────────────────────────────── */
 .tabs {
   display: flex;
-  gap: 4px;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 14px;
 }
 
@@ -75,54 +75,10 @@ body {
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.01em;
-  margin-right: 10px;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.tabDivider {
-  width: 1px;
-  height: 18px;
-  background: var(--line);
-  margin: 0 6px;
-  flex-shrink: 0;
-}
-
-.tabBtn {
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  padding: 8px 14px;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  font-family: inherit;
-  transition: color 0.15s, background 0.15s;
-  position: relative;
-}
-
-.tabBtn:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.tabBtn.active {
-  color: var(--text);
-  background: rgba(96, 165, 250, 0.08);
-}
-
-.tabBtn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 5px;
-  left: 14px;
-  right: 14px;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--accent);
 }
 
 .storagePill {
@@ -147,10 +103,20 @@ body {
   flex-shrink: 0;
 }
 
-/* ── Views ────────────────────────────────────────────── */
-.view { display: none; }
+/* ── Scroll reveal ────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
 
-.view.active {
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Views ────────────────────────────────────────────── */
+.view {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;

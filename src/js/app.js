@@ -1,5 +1,5 @@
 // js/app.js
-// Main application logic: state, entry form, confluences, tabs, edit/delete
+// Main application logic: state, entry form, confluences, edit/delete
 
 /**********************
  * App State
@@ -21,19 +21,6 @@ const state = {
   set selectedDateKey(v) { selectedDateKey = v; },
 };
 
-/**********************
- * Tabs
- **********************/
-function setActiveTab(tab) {
-  const isJournal = tab === "journal";
-  document.getElementById("tabJournalBtn").classList.toggle("active", isJournal);
-  document.getElementById("tabInsightsBtn").classList.toggle("active", !isJournal);
-  document.getElementById("journalView").classList.toggle("active", isJournal);
-  document.getElementById("insightsView").classList.toggle("active", !isJournal);
-  if (!isJournal) renderInsights(APP);
-}
-document.getElementById("tabJournalBtn").addEventListener("click", () => setActiveTab("journal"));
-document.getElementById("tabInsightsBtn").addEventListener("click", () => setActiveTab("insights"));
 document.getElementById("refreshInsightsBtn").addEventListener("click", () => renderInsights(APP));
 
 /**********************
@@ -486,3 +473,14 @@ renderDayDetails(selectedDateKey);
 renderPreview();
 renderChips();
 renderInsights(APP);
+
+/**********************
+ * Scroll reveal
+ **********************/
+(function initReveal() {
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => e.target.classList.toggle('in-view', e.isIntersecting)),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+})();

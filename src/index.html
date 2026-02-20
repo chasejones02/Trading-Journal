@@ -9,7 +9,7 @@
 <body>
   <div class="wrap">
 
-    <!-- Tabs -->
+    <!-- Header -->
     <div class="card tabs">
       <div class="appName">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -20,9 +20,6 @@
         </svg>
         Trade Journal
       </div>
-      <div class="tabDivider"></div>
-      <button class="tabBtn active" id="tabJournalBtn" type="button">Journal</button>
-      <button class="tabBtn" id="tabInsightsBtn" type="button">Insights</button>
       <div class="storagePill">Local storage</div>
     </div>
 
@@ -30,10 +27,10 @@
          JOURNAL VIEW
          Calendar → Day Details → Entry
          ============================ -->
-    <div class="view active" id="journalView">
+    <div class="view" id="journalView">
 
       <!-- Calendar -->
-      <div class="card calendarCard">
+      <div class="card calendarCard reveal">
         <div class="calTop">
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <div class="month" id="monthLabel">—</div>
@@ -54,7 +51,7 @@
       </div>
 
       <!-- Day Details (hidden when selected day has no trades) -->
-      <div class="card dayDetailsCard" id="dayDetailsCard">
+      <div class="card dayDetailsCard reveal" id="dayDetailsCard">
         <div class="dayHeader">
           <div>
             <div class="date" id="dayDetailsDate">—</div>
@@ -90,7 +87,7 @@
       </div>
 
       <!-- Entry form -->
-      <div class="card" id="entryCard">
+      <div class="card reveal" id="entryCard">
         <div class="title">
           <h1>Log Trade</h1>
           <div class="hint">
@@ -190,7 +187,7 @@
          INSIGHTS VIEW
          ============================ -->
     <div class="view" id="insightsView">
-      <div class="card">
+      <div class="card reveal">
         <div class="title" style="margin-bottom:8px;">
           <h1>Insights</h1>
           <div class="hint">
@@ -207,7 +204,7 @@
       </div>
 
       <div class="insightsWrap">
-        <div class="card">
+        <div class="card reveal">
           <h2 class="sectionLabel">
             Key stats
           </h2>
@@ -230,7 +227,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card reveal">
           <h2 class="sectionLabel">
             Win rate per confluence
           </h2>
@@ -242,7 +239,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column: 1 / -1;">
+        <div class="card reveal" style="grid-column: 1 / -1;">
           <h2 class="sectionLabel">
             Setup win rate (confluences together)
           </h2>
@@ -255,7 +252,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column: 1 / -1;">
+        <div class="card reveal" style="grid-column: 1 / -1;">
           <h2 class="sectionLabel">
             Best time of day (by hour)
           </h2>
