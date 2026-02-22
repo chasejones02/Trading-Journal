@@ -221,6 +221,15 @@
             <div class="stat"><div class="k">Best time of day</div>    <div class="v" id="statBestTime">—</div>      <div class="s" id="statBestTimeSub">—</div></div>
             <div class="stat"><div class="k">Win rate: Long</div>      <div class="v" id="statLongWin">—</div>       <div class="s" id="statLongWinSub">—</div></div>
             <div class="stat"><div class="k">Win rate: Short</div>     <div class="v" id="statShortWin">—</div>      <div class="s" id="statShortWinSub">—</div></div>
+            <div class="stat"><div class="k">Profit factor</div>       <div class="v" id="statProfitFactor">—</div>  <div class="s" id="statProfitFactorSub">—</div></div>
+            <div class="stat"><div class="k">Expectancy</div>          <div class="v" id="statExpectancy">—</div>    <div class="s" id="statExpectancySub">—</div></div>
+            <div class="stat"><div class="k">Avg win</div>             <div class="v" id="statAvgWin">—</div>        <div class="s" id="statAvgWinSub">—</div></div>
+            <div class="stat"><div class="k">Avg loss</div>            <div class="v" id="statAvgLoss">—</div>       <div class="s" id="statAvgLossSub">—</div></div>
+            <div class="stat"><div class="k">Win:Loss ratio</div>      <div class="v" id="statWinLossRatio">—</div>  <div class="s" id="statWinLossRatioSub">—</div></div>
+            <div class="stat"><div class="k">Max win streak</div>      <div class="v" id="statMaxWinStreak">—</div>  <div class="s" id="statMaxWinStreakSub">—</div></div>
+            <div class="stat"><div class="k">Max loss streak</div>     <div class="v" id="statMaxLossStreak">—</div> <div class="s" id="statMaxLossStreakSub">—</div></div>
+            <div class="stat"><div class="k">Current streak</div>      <div class="v" id="statCurrentStreak">—</div> <div class="s" id="statCurrentStreakSub">—</div></div>
+            <div class="stat"><div class="k">Max drawdown</div>        <div class="v" id="statMaxDrawdown">—</div>   <div class="s" id="statMaxDrawdownSub">—</div></div>
           </div>
           <div class="warn" style="margin-top:10px;">
             Notes: "Best confluence" and "Best setup" require enough samples to mean anything. Small sample sizes can lie.
@@ -262,6 +271,35 @@
           <div class="warn" style="margin-top:12px;">
             Bucket = hour of day in your saved trade time. If a trade has no time set, it's ignored for this section.
           </div>
+        </div>
+
+        <!-- Equity Curve -->
+        <div class="card reveal" style="grid-column: 1 / -1;">
+          <h2 class="sectionLabel">Equity curve</h2>
+          <div id="equityCurveWrap" class="equityCurveWrap"></div>
+          <div class="warn" style="margin-top:10px;">Cumulative PnL in chronological order. Peak marked with a dot.</div>
+        </div>
+
+        <!-- Day of Week + Ticker side by side -->
+        <div class="card reveal">
+          <h2 class="sectionLabel">Day of week performance</h2>
+          <div id="dowBars" class="dowBars"></div>
+        </div>
+
+        <div class="card reveal">
+          <h2 class="sectionLabel">Ticker breakdown</h2>
+          <div class="table" id="tickerTable">
+            <div class="trow" style="grid-template-columns:1fr 80px 100px;">
+              <div>Ticker</div><div class="badgeMini">Win%</div><div class="badgeMini">Net PnL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PnL Distribution -->
+        <div class="card reveal" style="grid-column: 1 / -1;">
+          <h2 class="sectionLabel">PnL distribution</h2>
+          <div id="pnlDistWrap"></div>
+          <div class="warn" style="margin-top:10px;">Trade count per PnL bucket — shows if your wins and losses are consistently sized.</div>
         </div>
       </div>
     </div>
